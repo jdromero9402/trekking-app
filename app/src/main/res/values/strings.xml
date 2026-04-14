@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TrekkingApp</string>
+
+    <string name="component_navigation_basic_camera_label">Camara Ext.</string>
+    <string name="component_navigation_gallery_label">Galeria</string>
+    <string name="component_navigation_in_app_camera_label">Camara Int.</string>
+
+    <string name="screen_gallery_single_photo_button_label">Una Foto</string>
+    <string name="screen_gallery_multiple_photos_button_label">Multiples Fotos</string>
+
+    <string name="screen_in_app_camera_rationale_label">El permiso de camamara es necesario para esta ventana, por favor acepte el permiso.</string>
+    <string name="screen_in_app_camera_request_button_label">Solicitar permiso</string>
+    <string name="screen_in_app_camera_no_permission_label">No se pudo obtener el permiso</string>
+</resources>
