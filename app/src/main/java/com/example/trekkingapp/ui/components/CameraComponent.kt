@@ -122,7 +122,11 @@ fun CameraComponent(modifier: Modifier = Modifier, onPhotoTaken: (Uri) -> Unit, 
                     Text(stringResource(R.string.screen_in_app_camera_request_button_label))
                 }
             } else {
-                ErrorMessage(message = R.string.screen_in_app_camera_no_permission_label)
+                ErrorMessage(message = R.string.screen_in_app_camera_no_permission_label,
+                    modifier = Modifier.fillMaxSize().align(
+                        Alignment.Center
+
+                    ))
             }
         }
     }
@@ -153,4 +157,13 @@ private fun capturePhoto(
             }
         }
     )
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@androidx.compose.ui.tooling.preview.Preview
+@Composable
+fun CameraComponentPreview(){
+//    CameraComponent(
+//
+//    )
 }

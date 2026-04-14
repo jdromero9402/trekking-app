@@ -1,9 +1,15 @@
 package com.example.trekkingapp.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +22,11 @@ import com.example.trekkingapp.R
 
 @Composable
 fun ErrorMessage(modifier: Modifier = Modifier, message: Int) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Icon(imageVector = Icons.Default.ErrorOutline, contentDescription = "", tint = Color.Red)
         Text(stringResource(message), color = Color.Red)
     }
@@ -25,5 +35,18 @@ fun ErrorMessage(modifier: Modifier = Modifier, message: Int) {
 @Preview
 @Composable
 fun ErrorMessagePreview(){
-    ErrorMessage(message = R.string.screen_in_app_camera_no_permission_label)
+
+    OutlinedCard (
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+     ) {
+        Box(){
+            ErrorMessage(message = R.string.screen_in_app_camera_no_permission_label,
+                modifier = Modifier.fillMaxSize().align(
+                    Alignment.Center
+
+                ))
+        }
+    }
 }
