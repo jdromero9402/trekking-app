@@ -12,7 +12,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.example.trekkingapp.ui.screens.InAppCameraScreen
+import com.example.trekkingapp.ui.screens.Home
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -41,7 +41,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ),
             entryProvider = entryProvider {
                 entry<AppRoutes.Home> {
-                    InAppCameraScreen()
+                    Home()
                 }
             }
         )
