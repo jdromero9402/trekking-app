@@ -23,18 +23,28 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.trekkingapp.ui.components.CameraComponent
+import com.example.trekkingapp.ui.components.MapComponent
 import com.example.trekkingapp.ui.theme.AppTheme
+import com.example.trekkingapp.viewmodels.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun Home(modifier: Modifier = Modifier) {
+fun Home(modifier: Modifier = Modifier,
+         locationViewModel: LocationViewModel = viewModel()
+         ) {
+    val context = LocalContext.current
+
+
     val configuration = LocalConfiguration.current
     val isLandscape =
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -45,15 +55,29 @@ fun Home(modifier: Modifier = Modifier) {
     LaunchedEffect(null) {
         cameraPermission.launchPermissionRequest()
     }
+    val locationPermission =
+        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+    LaunchedEffect(Unit) {
+        locationPermission.launchPermissionRequest()
+    }
+
+    LaunchedEffect(locationPermission.status.isGranted) {
+        if (locationPermission.status.isGranted) locationViewModel.setup(context)
+    }
+
+
     if (isLandscape) {
         LandscapeCameraLayout(
             photos = photos,
-            cameraPermission = cameraPermission
+            cameraPermission = cameraPermission,
+            locationPermission = locationPermission
         )
     } else {
         PortraitCameraLayout(
             photos = photos,
-            cameraPermission = cameraPermission
+            cameraPermission = cameraPermission,
+            locationPermission = locationPermission
         )
     }
 
@@ -64,13 +88,16 @@ fun Home(modifier: Modifier = Modifier) {
 @Composable
 fun LandscapeCameraLayout(modifier: Modifier = Modifier,
                           photos: SnapshotStateList<Uri>,
-                          cameraPermission: PermissionState) {
+                          cameraPermission: PermissionState,
+                          locationPermission: PermissionState) {
     Row (
         modifier.padding(20.dp),
     ) {
         OutlinedCard(
             modifier = Modifier.fillMaxHeight().weight(0.6f)
-        ) { }
+        ) {
+            MapComponent(Modifier,locationPermission)
+        }
         Spacer(Modifier.width(8.dp))
         Column  (
             modifier.weight(0.4f),
@@ -109,7 +136,8 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
 @Composable
 fun PortraitCameraLayout(modifier: Modifier = Modifier,
                          photos: SnapshotStateList<Uri>,
-                         cameraPermission: PermissionState) {
+                         cameraPermission: PermissionState,
+                         locationPermission: PermissionState) {
     val cameraWeight = if (photos.isEmpty()) 0.5f else 0.35f
     val galleryWeight = 0.15f
     Column(
@@ -144,7 +172,9 @@ fun PortraitCameraLayout(modifier: Modifier = Modifier,
         Spacer(Modifier.height(8.dp))
         OutlinedCard(
             modifier = Modifier.fillMaxWidth().weight(0.5f)
-        ) { }
+        ) {
+            MapComponent(Modifier,locationPermission)
+        }
     }
 }
 

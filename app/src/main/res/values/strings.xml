@@ -8,7 +8,11 @@
     <string name="screen_gallery_single_photo_button_label">Una Foto</string>
     <string name="screen_gallery_multiple_photos_button_label">Multiples Fotos</string>
 
-    <string name="screen_in_app_camera_rationale_label">El permiso de camamara es necesario para esta ventana, por favor acepte el permiso.</string>
+    <string name="screen_in_app_camera_rationale_label">El permiso de camara es necesario para esta ventana, por favor acepte el permiso.</string>
     <string name="screen_in_app_camera_request_button_label">Solicitar permiso</string>
-    <string name="screen_in_app_camera_no_permission_label">No se pudo obtener el permiso</string>
+    <string name="screen_in_app_camera_no_permission_label">No se pudo obtener el permiso de la camara</string>
+
+    <string name="location_rationale_label">El permiso de ubicación es necesario para esta ventana, por favor acepte el permiso.</string>
+    <string name="location_request_button_label">Solicitar permiso</string>
+    <string name="location_no_permission_label">No se pudo obtener el permiso de ubicación</string>
 </resources>
