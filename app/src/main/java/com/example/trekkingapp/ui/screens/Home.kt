@@ -112,9 +112,11 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
         modifier.padding(20.dp),
     ) {
         OutlinedCard(
-            modifier = Modifier.fillMaxHeight().weight(0.6f)
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.6f)
         ) {
-            MapComponent(Modifier,locationPermission,locationViewModel, photos)
+            MapComponent(Modifier,locationPermission,locationViewModel, photos, {photos.clear()})
         }
         Spacer(Modifier.width(8.dp))
         Column  (
@@ -197,9 +199,11 @@ fun PortraitCameraLayout(
         }
         Spacer(Modifier.height(8.dp))
         OutlinedCard(
-            modifier = Modifier.fillMaxWidth().weight(0.5f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.5f)
         ) {
-            MapComponent(Modifier,locationPermission, locationViewModel, photos)
+            MapComponent(Modifier,locationPermission, locationViewModel, photos, { photos.clear() })
         }
     }
 }

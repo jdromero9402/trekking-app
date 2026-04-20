@@ -85,6 +85,11 @@ class LocationViewModel : ViewModel() {
     @SuppressLint("MissingPermission")
     fun startRecordingLocation() {
         _uiState.update {
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
             it.copy(isRecording = true)
         }
     }
@@ -97,7 +102,7 @@ class LocationViewModel : ViewModel() {
                 getPosition,
                 Looper.getMainLooper()
             )
-            it.copy()
+            it.copy(isRecording = false)
         }
     }
 
