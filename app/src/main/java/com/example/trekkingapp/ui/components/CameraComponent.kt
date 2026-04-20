@@ -56,7 +56,7 @@ const val TAG = "CameraComponent"
 @Composable
 fun CameraComponent(
     modifier: Modifier = Modifier,
-    onPhotoTaken: (Uri, LatLng?) -> Unit,
+    onPhotoTaken: (Uri, LatLng?, String) -> Unit,
     permission: PermissionState,
     locationViewModel: LocationViewModel = viewModel ()
 ) {
@@ -167,7 +167,7 @@ fun CameraComponent(
 private fun capturePhoto(
     context: Context,
     imageCapture: ImageCapture?,
-    onPhotoTaken: (uri: Uri, pos: LatLng?) -> Unit,
+    onPhotoTaken: (uri: Uri, pos: LatLng?, name: String) -> Unit,
     locationState: LocationState
 ) {
     val capture = imageCapture ?: return
@@ -187,7 +187,7 @@ private fun capturePhoto(
                 }
                 Log.d(TAG, "Photo pos: $latLng + " + " "+ locationState.isRecording)
 
-                onPhotoTaken(output.savedUri!!, latLng)
+                onPhotoTaken(output.savedUri!!, latLng, name)
             }
 
             override fun onError(exception: ImageCaptureException) {

@@ -5,5 +5,6 @@ import com.google.android.gms.maps.model.LatLng
 
 data class PhotoLocation(
     val photo: Uri,
-    val pos: LatLng?
+    val pos: LatLng?,
+    val name: String
 )

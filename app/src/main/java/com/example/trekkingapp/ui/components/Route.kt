@@ -11,7 +11,7 @@ fun Route (
 ){
     for (point in points){
         point.pos?.let {
-            ImageMarker(position = it, photoUri = point.photo)
+            ImageMarker(position = it, photoUri = point.photo, title = point.name)
         }
     }
 }

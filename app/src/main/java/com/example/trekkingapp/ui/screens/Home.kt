@@ -127,8 +127,8 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
                     .fillMaxHeight()
                     .weight(0.7f)
             ) {
-                CameraComponent(onPhotoTaken = { uri, pos->
-                    photos.add(PhotoLocation(uri, pos))
+                CameraComponent(onPhotoTaken = { uri, pos, name ->
+                    photos.add(PhotoLocation(uri, pos, name))
                 }, permission = cameraPermission)
             }
             if ( !photos.isEmpty() ) {
@@ -176,8 +176,8 @@ fun PortraitCameraLayout(
                 .fillMaxWidth()
                 .weight(cameraWeight)
         ) {
-            CameraComponent(onPhotoTaken = { uri, pos->
-                photos.add(PhotoLocation(uri, pos))
+            CameraComponent(onPhotoTaken = { uri, pos, name->
+                photos.add(PhotoLocation(uri, pos, name))
             }, permission = cameraPermission)
         }
         Spacer(Modifier.height(8.dp))

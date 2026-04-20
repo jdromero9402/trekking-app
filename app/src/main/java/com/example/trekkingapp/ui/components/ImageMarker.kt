@@ -78,14 +78,15 @@ fun bitmapDescriptorFromUri(uri: Uri, size: Int = 120): BitmapDescriptor? {
 }
 
 @Composable
-fun ImageMarker (modifier: Modifier = Modifier, position: LatLng, photoUri: Uri) {
+fun ImageMarker (modifier: Modifier = Modifier, position: LatLng, photoUri: Uri, title: String) {
 
 
     val icon = bitmapDescriptorFromUri(photoUri)
     Marker(
-        title = "prueba",
         state = rememberUpdatedMarkerState(position = position),
         icon = icon,
+        contentDescription = "content",
+        title = title
     )
 }
 
