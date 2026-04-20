@@ -1,7 +1,5 @@
 package com.example.trekkingapp.ui.components
 
-import android.content.Context
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,13 +19,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trekkingapp.R
+import com.example.trekkingapp.ui.components.dataclass.PhotoLocation
 import com.example.trekkingapp.viewmodels.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -36,15 +34,17 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberUpdatedMarkerState
-import androidx.core.net.toUri
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapComponent(modifier: Modifier = Modifier, permission: PermissionState, Homecontext: Context, locationViewModel: LocationViewModel = viewModel()){
+fun MapComponent(
+    modifier: Modifier = Modifier,
+    permission: PermissionState,
+    locationViewModel: LocationViewModel = viewModel(),
+    photos: List<PhotoLocation>
+){
     val locationState by locationViewModel.state.collectAsState()
 
     val context = LocalContext.current
@@ -105,9 +105,10 @@ fun MapComponent(modifier: Modifier = Modifier, permission: PermissionState, Hom
                 )
             )
             {
-                locationState.lastPos?.let {
-                    ImageMarker(position = it, photoUri = "content://media/external/images/media/1000776015".toUri())
-                 }
+                Route(points = photos)
+//                locationState.lastPos?.let {
+//                    ImageMarker(position = it, photoUri = "content://media/external/images/media/35".toUri())
+//                }
                 //Draw POIs
 //                poiList.forEach { pos ->
 //                    //Custom Marker with vector

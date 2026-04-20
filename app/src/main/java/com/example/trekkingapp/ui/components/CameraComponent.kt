@@ -36,18 +36,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trekkingapp.R
 import com.example.trekkingapp.utils.createImageOnPhotosFolder
+import com.example.trekkingapp.viewmodels.LocationState
+import com.example.trekkingapp.viewmodels.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 
 const val TAG = "CameraComponent"
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraComponent(modifier: Modifier = Modifier, onPhotoTaken: (Uri) -> Unit, permission: PermissionState) {
+fun CameraComponent(
+    modifier: Modifier = Modifier,
+    onPhotoTaken: (Uri, LatLng?) -> Unit,
+    permission: PermissionState,
+    locationViewModel: LocationViewModel = viewModel ()
+) {
+    val locationState by locationViewModel.state.collectAsState()
+
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -105,7 +116,7 @@ fun CameraComponent(modifier: Modifier = Modifier, onPhotoTaken: (Uri) -> Unit, 
             }
             //Button to take the photo
             FloatingActionButton(
-                onClick = { capturePhoto(context, imageCapture, onPhotoTaken) },
+                onClick = { capturePhoto(context, imageCapture, onPhotoTaken, locationState) },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
@@ -137,7 +148,8 @@ fun CameraComponent(modifier: Modifier = Modifier, onPhotoTaken: (Uri) -> Unit, 
 private fun capturePhoto(
     context: Context,
     imageCapture: ImageCapture?,
-    onPhotoTaken: (Uri) -> Unit = {}
+    onPhotoTaken: (uri: Uri, pos: LatLng?) -> Unit,
+    locationState: LocationState
 ) {
     val capture = imageCapture ?: return
 
@@ -150,7 +162,7 @@ private fun capturePhoto(
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                 // Success: output.savedUri
                 Log.d(TAG, "Photo saved: ${output.savedUri}")
-                onPhotoTaken(output.savedUri!!)
+                onPhotoTaken(output.savedUri!!, locationState.lastPos)
             }
 
             override fun onError(exception: ImageCaptureException) {

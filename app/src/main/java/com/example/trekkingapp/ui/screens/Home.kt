@@ -3,7 +3,6 @@ package com.example.trekkingapp.ui.screens
 import android.Manifest
 import android.content.Context
 import android.content.res.Configuration
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,8 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -34,13 +31,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.trekkingapp.ui.components.CameraComponent
 import com.example.trekkingapp.ui.components.MapComponent
+import com.example.trekkingapp.ui.components.dataclass.PhotoLocation
 import com.example.trekkingapp.ui.theme.AppTheme
 import com.example.trekkingapp.viewmodels.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.rememberPermissionState
+
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -54,7 +52,7 @@ fun Home(modifier: Modifier = Modifier,
     val isLandscape =
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    val photos = rememberSaveable { mutableStateListOf<Uri>() }
+    val photos = rememberSaveable { mutableStateListOf<PhotoLocation>() }
 
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
@@ -108,7 +106,7 @@ fun Home(modifier: Modifier = Modifier,
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LandscapeCameraLayout(modifier: Modifier = Modifier,
-                          photos: SnapshotStateList<Uri>,
+                          photos: SnapshotStateList<PhotoLocation>,
                           cameraPermission: PermissionState,
                           locationPermission: PermissionState,
                           context: Context,
@@ -120,7 +118,7 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
         OutlinedCard(
             modifier = Modifier.fillMaxHeight().weight(0.6f)
         ) {
-            MapComponent(Modifier,locationPermission, context, locationViewModel)
+            MapComponent(Modifier,locationPermission,locationViewModel, photos)
         }
         Spacer(Modifier.width(8.dp))
         Column  (
@@ -131,9 +129,12 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
                     .fillMaxHeight()
                     .weight(0.7f)
             ) {
-                CameraComponent(onPhotoTaken = { photos.add(it) }, permission = cameraPermission)
+                CameraComponent(onPhotoTaken = { uri, pos->
+                    photos.add(PhotoLocation(uri, pos))
+                }, permission = cameraPermission)
             }
             if ( !photos.isEmpty() ) {
+                Log.d("Photo",photos.toString())
                 Spacer(Modifier.height(8.dp))
                 OutlinedCard(
                     modifier = Modifier
@@ -144,8 +145,8 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         reverseLayout = true
                     ) {
-                        items(items = photos, key = { it.toString() }) { photo ->
-                            AsyncImage(model = photo, contentDescription = null)
+                        items(items = photos, key = { it.toString() }) { photoLocation ->
+                            AsyncImage(model = photoLocation.photo, contentDescription = null)
                         }
                     }
                 }
@@ -158,12 +159,13 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PortraitCameraLayout(modifier: Modifier = Modifier,
-                         photos: SnapshotStateList<Uri>,
-                         cameraPermission: PermissionState,
-                         locationPermission: PermissionState,
-                         context: Context,
-                         locationViewModel: LocationViewModel = viewModel()) {
+fun PortraitCameraLayout(
+    modifier: Modifier = Modifier,
+    photos: SnapshotStateList<PhotoLocation>,
+    cameraPermission: PermissionState,
+    locationPermission: PermissionState,
+    context: Context,
+    locationViewModel: LocationViewModel = viewModel()) {
     val cameraWeight = if (photos.isEmpty()) 0.5f else 0.35f
     val galleryWeight = 0.15f
     Column(
@@ -176,7 +178,9 @@ fun PortraitCameraLayout(modifier: Modifier = Modifier,
                 .fillMaxWidth()
                 .weight(cameraWeight)
         ) {
-            CameraComponent(onPhotoTaken = { photos.add(it) }, permission = cameraPermission)
+            CameraComponent(onPhotoTaken = { uri, pos->
+                photos.add(PhotoLocation(uri, pos))
+            }, permission = cameraPermission)
         }
         Spacer(Modifier.height(8.dp))
         if ( !photos.isEmpty() ) {
@@ -189,8 +193,8 @@ fun PortraitCameraLayout(modifier: Modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     reverseLayout = true
                 ) {
-                    items(items = photos, key = { it.toString() }) { photo ->
-                        AsyncImage(model = photo, contentDescription = null)
+                    items(items = photos, key = { it.toString() }) { photoLocation ->
+                        AsyncImage(model = photoLocation.photo, contentDescription = null)
                     }
                 }
             }
@@ -199,7 +203,7 @@ fun PortraitCameraLayout(modifier: Modifier = Modifier,
         OutlinedCard(
             modifier = Modifier.fillMaxWidth().weight(0.5f)
         ) {
-            MapComponent(Modifier,locationPermission, context, locationViewModel)
+            MapComponent(Modifier,locationPermission, locationViewModel, photos)
         }
     }
 }
