@@ -123,10 +123,12 @@ fun CameraComponent(modifier: Modifier = Modifier, onPhotoTaken: (Uri) -> Unit, 
                 }
             } else {
                 ErrorMessage(message = R.string.screen_in_app_camera_no_permission_label,
-                    modifier = Modifier.fillMaxSize().align(
-                        Alignment.Center
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(
+                            Alignment.Center
 
-                    ))
+                        ))
             }
         }
     }

@@ -19,6 +19,7 @@ accompanistPermissions = "0.37.3"
 materialIconsExtended = "1.7.8"
 camerax = "1.6.0"
 uiTextGoogleFonts = "1.10.6"
+uiGraphics = "1.10.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +59,7 @@ camera-video = { group = "androidx.camera", name = "camera-video", version.ref =
 camera-compose = { group = "androidx.camera", name = "camera-compose", version.ref = "camerax" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

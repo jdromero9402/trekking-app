@@ -1,8 +1,10 @@
 package com.example.trekkingapp.ui.screens
 
 import android.Manifest
+import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -35,6 +39,7 @@ import com.example.trekkingapp.viewmodels.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -43,45 +48,61 @@ fun Home(modifier: Modifier = Modifier,
          locationViewModel: LocationViewModel = viewModel()
          ) {
     val context = LocalContext.current
-
+//    val locationState by locationViewModel.state.collectAsState()
 
     val configuration = LocalConfiguration.current
     val isLandscape =
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    val cameraPermission = rememberPermissionState(Manifest.permission.CAMERA)
     val photos = rememberSaveable { mutableStateListOf<Uri>() }
 
-    LaunchedEffect(null) {
-        cameraPermission.launchPermissionRequest()
-    }
-    val locationPermission =
-        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    val permissionsState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
+
+
 
     LaunchedEffect(Unit) {
-        locationPermission.launchPermissionRequest()
+        permissionsState.launchMultiplePermissionRequest()
     }
+
+    val cameraPermission = permissionsState.permissions
+        .first { it.permission == Manifest.permission.CAMERA }
+
+    val locationPermission = permissionsState.permissions
+        .first { it.permission == Manifest.permission.ACCESS_FINE_LOCATION }
 
     LaunchedEffect(locationPermission.status.isGranted) {
-        if (locationPermission.status.isGranted) locationViewModel.setup(context)
-    }
+        if (locationPermission.status.isGranted) {
+            locationViewModel.setup(context)
+            locationViewModel.startLocationUpdates()
+//            val initLocation =  locationState.lastPos
+//            Log.d("Home",initLocation.toString())
+//            locationViewModel.stopLocationUpdates()
 
+        }
+    }
 
     if (isLandscape) {
         LandscapeCameraLayout(
             photos = photos,
             cameraPermission = cameraPermission,
-            locationPermission = locationPermission
+            locationPermission = locationPermission,
+            context = context,
+            locationViewModel = locationViewModel
         )
     } else {
         PortraitCameraLayout(
             photos = photos,
             cameraPermission = cameraPermission,
-            locationPermission = locationPermission
+            locationPermission = locationPermission,
+            context = context,
+            locationViewModel = locationViewModel
         )
     }
-
-
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -89,14 +110,17 @@ fun Home(modifier: Modifier = Modifier,
 fun LandscapeCameraLayout(modifier: Modifier = Modifier,
                           photos: SnapshotStateList<Uri>,
                           cameraPermission: PermissionState,
-                          locationPermission: PermissionState) {
+                          locationPermission: PermissionState,
+                          context: Context,
+                          locationViewModel: LocationViewModel = viewModel()
+) {
     Row (
         modifier.padding(20.dp),
     ) {
         OutlinedCard(
             modifier = Modifier.fillMaxHeight().weight(0.6f)
         ) {
-            MapComponent(Modifier,locationPermission)
+            MapComponent(Modifier,locationPermission, context, locationViewModel)
         }
         Spacer(Modifier.width(8.dp))
         Column  (
@@ -137,7 +161,9 @@ fun LandscapeCameraLayout(modifier: Modifier = Modifier,
 fun PortraitCameraLayout(modifier: Modifier = Modifier,
                          photos: SnapshotStateList<Uri>,
                          cameraPermission: PermissionState,
-                         locationPermission: PermissionState) {
+                         locationPermission: PermissionState,
+                         context: Context,
+                         locationViewModel: LocationViewModel = viewModel()) {
     val cameraWeight = if (photos.isEmpty()) 0.5f else 0.35f
     val galleryWeight = 0.15f
     Column(
@@ -173,7 +199,7 @@ fun PortraitCameraLayout(modifier: Modifier = Modifier,
         OutlinedCard(
             modifier = Modifier.fillMaxWidth().weight(0.5f)
         ) {
-            MapComponent(Modifier,locationPermission)
+            MapComponent(Modifier,locationPermission, context, locationViewModel)
         }
     }
 }

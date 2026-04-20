@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.lottie)
     //Google Maps
     implementation(libs.maps.compose)
+    implementation(libs.androidx.ui.graphics)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

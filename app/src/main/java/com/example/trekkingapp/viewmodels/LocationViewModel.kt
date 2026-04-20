@@ -32,6 +32,7 @@ class LocationViewModel : ViewModel() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
+    private  lateinit var getPosition: LocationCallback
 
     override fun onCleared() {
         super.onCleared()
@@ -66,6 +67,26 @@ class LocationViewModel : ViewModel() {
                 }
             }
         }
+        getPosition = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                _uiState.update { currentState ->
+                    Log.d("LocationViewModel", "onLocationResult: $locationResult")
+                    currentState.copy(
+                        lastPos = LatLng(
+                            locationResult.locations.last().latitude,
+                            locationResult.locations.last().longitude
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun startRecordingLocation() {
+        _uiState.update {
+            it.copy(isRecording = true)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -73,16 +94,22 @@ class LocationViewModel : ViewModel() {
         _uiState.update {
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
-                locationCallback,
+                getPosition,
                 Looper.getMainLooper()
             )
-            it.copy(isRecording = true)
+            it.copy()
         }
     }
 
     fun stopLocationUpdates() {
         _uiState.update {
             fusedLocationClient.removeLocationUpdates(locationCallback)
+            it.copy(isRecording = false)
+        }
+    }
+
+    fun stopRecording(){
+        _uiState.update {
             it.copy(isRecording = false)
         }
     }
