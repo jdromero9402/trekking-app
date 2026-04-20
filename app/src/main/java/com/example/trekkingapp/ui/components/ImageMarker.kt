@@ -83,6 +83,7 @@ fun ImageMarker (modifier: Modifier = Modifier, position: LatLng, photoUri: Uri)
 
     val icon = bitmapDescriptorFromUri(photoUri)
     Marker(
+        title = "prueba",
         state = rememberUpdatedMarkerState(position = position),
         icon = icon,
     )

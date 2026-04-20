@@ -38,6 +38,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -126,6 +127,17 @@ fun MapComponent(
             )
             {
                 Route(points = photos)
+
+                locationState.lastPos?.let {
+                    Marker(
+                        state = rememberUpdatedMarkerState(locationState.lastPos!!),
+                        title = "Punto inicial",
+                        snippet = "Marcador en el Aeropuerto",
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                    )
+                }
+
+
                 Polyline(
                     clickable = true,
                     points = locationState.route,
