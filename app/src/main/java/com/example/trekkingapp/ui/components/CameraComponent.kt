@@ -182,9 +182,11 @@ private fun capturePhoto(
                 // Success: output.savedUri
                 Log.d(TAG, "Photo saved: ${output.savedUri}")
                 var latLng: LatLng? = null
-                locationState.isRecording.let { _ ->
+                if(locationState.isRecording){
                     latLng = locationState.lastPos
                 }
+                Log.d(TAG, "Photo pos: $latLng + " + " "+ locationState.isRecording)
+
                 onPhotoTaken(output.savedUri!!, latLng)
             }
 

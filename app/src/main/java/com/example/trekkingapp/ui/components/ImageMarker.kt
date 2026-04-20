@@ -1,11 +1,14 @@
 package com.example.trekkingapp.ui.components
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -34,6 +37,26 @@ fun makeCircularBitmap(bitmap: Bitmap, size: Int): Bitmap {
 
     return output
 }
+
+fun fixBitmapRotation(bitmap: Bitmap, uri: Uri, context: Context): Bitmap {
+    val inputStream = context.contentResolver.openInputStream(uri) ?: return bitmap
+    val exif = ExifInterface(inputStream)
+    inputStream.close()
+
+    val rotation = when (
+        exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+    ) {
+        ExifInterface.ORIENTATION_ROTATE_90  -> 90f
+        ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+        ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+        else -> 0f
+    }
+
+    if (rotation == 0f) return bitmap
+
+    val matrix = Matrix().apply { postRotate(rotation) }
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
 @Composable
 fun bitmapDescriptorFromUri(uri: Uri, size: Int = 120): BitmapDescriptor? {
     val context = LocalContext.current
@@ -43,7 +66,8 @@ fun bitmapDescriptorFromUri(uri: Uri, size: Int = 120): BitmapDescriptor? {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream?.close()
 
-            val circular = makeCircularBitmap(bitmap, size)
+            val rotated = fixBitmapRotation(bitmap, uri, context)
+            val circular = makeCircularBitmap(rotated, size)
 
             BitmapDescriptorFactory.fromBitmap(circular)
         } catch (e: Exception) {
