@@ -85,8 +85,6 @@ fun MapComponent(
             locationState.lastPos?.longitude ?: 0.0
         ), zoomLevel)
         Log.i("MiTag", locationState.lastPos.toString())
-
-//        locationState.lastPos?.let { position = CameraPosition.fromLatLngZoom( it, zoomLevel) }
     }
 
     LaunchedEffect(locationState.lastPos) {
@@ -128,38 +126,6 @@ fun MapComponent(
             )
             {
                 Route(points = photos)
-
-//                locationState.lastPos?.let {
-//                    Marker(
-//                        state = rememberUpdatedMarkerState(locationState.lastPos),
-//                        title = "${"%.2f".format(pos.latitude)}, ${"%.2f".format(pos.longitude)}",
-//                        snippet = "Aqui paso algo feo :(",
-//                        anchor = Offset(0.5f, 1f),
-//                        icon = createBitmapDescriptor(context, R.drawable.poi_marker)
-//                    )
-//                }
-                //Draw POIs
-//                poiList.forEach { pos ->
-//                    //Custom Marker with vector
-//                    Marker(
-//                        state = rememberUpdatedMarkerState(pos),
-//                        title = "${"%.2f".format(pos.latitude)}, ${"%.2f".format(pos.longitude)}",
-//                        snippet = "Aqui paso algo feo :(",
-//                        anchor = Offset(0.5f, 1f),
-//                        icon = createBitmapDescriptor(context, R.drawable.poi_marker)
-//                    )
-//                }
-                //Draw Events
-//                eventList.forEach { pos ->
-//                    Marker(
-//                        state = rememberUpdatedMarkerState(pos),
-//                        title = "${"%.2f".format(pos.latitude)}, ${"%.2f".format(pos.longitude)}",
-//                        snippet = "Un evento sobre el mapa",
-//                        anchor = Offset(0.5f, 0.5f),
-//                        icon = createBitmapDescriptor(context, R.drawable.tee_marker)
-//                    )
-//                }
-                //Draw Route
                 Polyline(
                     clickable = true,
                     points = locationState.route,
@@ -168,31 +134,9 @@ fun MapComponent(
                     startCap = RoundCap(),
                     endCap = RoundCap(),
                 )
-                //Draw current location
-                locationState.lastPos?.let {
-//                    Marker(
-//                        state = rememberUpdatedMarkerState(LatLng(it.latitude, it.longitude)),
-//                        title = "Current Location",
-//                        snippet = "Speed: ${"%.2f".format(locationState.speed * 3.6)} km/h",
-//                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
-//                    )
-                    /**
-                    MarkerComposable(
-                    state = rememberUpdatedMarkerState(locationState.lastPos!!),
-                    anchor = Offset(0.5f, 0.5f),
-                    zIndex = 1f
-                    ) {
-                    Icon(
-                    imageVector = Icons.Rounded.MyLocation,
-                    contentDescription = null,
-                    Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                    )
-                    }*/
-                }
             }
             Row(modifier.align(Alignment.TopEnd).padding(20.dp)) {
-                if (locationState.isRecording){
+                if (!photos.isEmpty()){
                     FloatingActionButton(
                         modifier = Modifier.size(64.dp),
                         onClick = {
