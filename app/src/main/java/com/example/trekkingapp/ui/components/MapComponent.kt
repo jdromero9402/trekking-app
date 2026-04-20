@@ -34,8 +34,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -108,7 +110,13 @@ fun MapComponent(
                 Route(points = photos)
 
 //                locationState.lastPos?.let {
-//                    ImageMarker(position = it, photoUri = "content://media/external/images/media/35".toUri())
+//                    Marker(
+//                        state = rememberUpdatedMarkerState(locationState.lastPos),
+//                        title = "${"%.2f".format(pos.latitude)}, ${"%.2f".format(pos.longitude)}",
+//                        snippet = "Aqui paso algo feo :(",
+//                        anchor = Offset(0.5f, 1f),
+//                        icon = createBitmapDescriptor(context, R.drawable.poi_marker)
+//                    )
 //                }
                 //Draw POIs
 //                poiList.forEach { pos ->

@@ -181,7 +181,11 @@ private fun capturePhoto(
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                 // Success: output.savedUri
                 Log.d(TAG, "Photo saved: ${output.savedUri}")
-                onPhotoTaken(output.savedUri!!, locationState.lastPos)
+                var latLng: LatLng? = null
+                locationState.isRecording.let { _ ->
+                    latLng = locationState.lastPos
+                }
+                onPhotoTaken(output.savedUri!!, latLng)
             }
 
             override fun onError(exception: ImageCaptureException) {
