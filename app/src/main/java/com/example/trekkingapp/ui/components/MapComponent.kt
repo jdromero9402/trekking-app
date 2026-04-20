@@ -106,6 +106,7 @@ fun MapComponent(
             )
             {
                 Route(points = photos)
+
 //                locationState.lastPos?.let {
 //                    ImageMarker(position = it, photoUri = "content://media/external/images/media/35".toUri())
 //                }

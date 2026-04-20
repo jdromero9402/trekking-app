@@ -46,7 +46,6 @@ fun Home(modifier: Modifier = Modifier,
          locationViewModel: LocationViewModel = viewModel()
          ) {
     val context = LocalContext.current
-//    val locationState by locationViewModel.state.collectAsState()
 
     val configuration = LocalConfiguration.current
     val isLandscape =
@@ -77,9 +76,6 @@ fun Home(modifier: Modifier = Modifier,
         if (locationPermission.status.isGranted) {
             locationViewModel.setup(context)
             locationViewModel.startLocationUpdates()
-//            val initLocation =  locationState.lastPos
-//            Log.d("Home",initLocation.toString())
-//            locationViewModel.stopLocationUpdates()
 
         }
     }

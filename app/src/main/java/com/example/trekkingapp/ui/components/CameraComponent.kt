@@ -11,6 +11,7 @@ import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Camera
 import androidx.compose.material.icons.rounded.Cameraswitch
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -72,13 +75,17 @@ fun CameraComponent(
     val selector =
         if (useFront) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
 
+    var isCameraReady by remember { mutableStateOf(false) }
 
     // Bind CameraX use cases once
     LaunchedEffect(selector) {
+        isCameraReady = false  // 👈 reset al cambiar cámara
         val provider = ProcessCameraProvider.awaitInstance(context)
         val preview = Preview.Builder().build().apply {
-            // When CameraX needs a surface, publish it to Compose
-            setSurfaceProvider { req -> surfaceRequests.value = req }
+            setSurfaceProvider { req ->
+                surfaceRequests.value = req
+                isCameraReady = true  // 👈 marcamos lista cuando llega el primer frame
+            }
         }
         imageCapture = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
@@ -95,37 +102,49 @@ fun CameraComponent(
 
     Box(modifier) {
         if (permission.status.isGranted){
-            // The actual Compose viewfinder
+            Log.d("CameraComponent", "Permission granted")
             surfaceRequest?.let { req ->
                 CameraXViewfinder(
                     surfaceRequest = req, modifier = Modifier
                         .fillMaxSize()
                 )
             }
-            //Button to change cameras
-            FloatingActionButton(
-                onClick = { useFront = !useFront },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    Icons.Rounded.Cameraswitch,
-                    contentDescription = null
-                )
+            if (!isCameraReady) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
             }
-            //Button to take the photo
-            FloatingActionButton(
-                onClick = { capturePhoto(context, imageCapture, onPhotoTaken, locationState) },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    Icons.Rounded.Camera,
-                    contentDescription = null
-                )
+            if (isCameraReady) {
+                FloatingActionButton(
+                    onClick = { useFront = !useFront },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Cameraswitch,
+                        contentDescription = null
+                    )
+                }
+                //Button to take the photo
+                FloatingActionButton(
+                    onClick = { capturePhoto(context, imageCapture, onPhotoTaken, locationState) },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Camera,
+                        contentDescription = null
+                    )
+                }
             }
+
         } else {
             if (permission.status.shouldShowRationale) {
                 Text(stringResource(R.string.screen_in_app_camera_rationale_label))
